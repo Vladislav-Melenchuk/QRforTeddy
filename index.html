@@ -23,12 +23,46 @@
       <button class="ghost-button hidden" id="startButton" type="button">Начать</button>
     </section>
 
+    <section class="screen" id="screen-menu" aria-label="Меню мини-игр">
+      <div class="menu-scene">
+        <div class="bubble-field" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="menu-heading">
+          <p class="overline">little arcade</p>
+          <h1>Выбери путь</h1>
+        </div>
+        <div class="menu-grid">
+          <button class="menu-card" id="snakeFreeButton" type="button">
+            <span class="menu-icon">∞</span>
+            <strong>Бесконечная змейка</strong>
+            <small>Играй без цели и таймера</small>
+          </button>
+          <button class="menu-card" id="flappyButton" type="button">
+            <span class="menu-icon">↟</span>
+            <strong>Flappy Bird</strong>
+            <small>Роза летит между световыми стенами</small>
+          </button>
+          <button class="menu-card" id="messageButton" type="button">
+            <span class="menu-icon">54</span>
+            <strong>Послание</strong>
+            <small>Набери 54 в змейке, чтобы открыть</small>
+          </button>
+        </div>
+      </div>
+    </section>
+
     <section class="screen" id="screen-game" aria-label="Игра">
       <div class="game-wrap">
         <div class="game-header">
           <div>
             <p class="overline">Memory gate</p>
-            <h1>Набери 54</h1>
+            <h1 id="snakeTitle">Набери 54</h1>
           </div>
           <div class="score-card" aria-live="polite">
             <span>очки</span>
@@ -47,6 +81,34 @@
         <div class="game-help">
           <span>WASD / стрелки</span>
           <span>свайп на телефоне</span>
+          <button class="mini-button" id="snakeMenuButton" type="button">Меню</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-flappy" aria-label="Flappy Bird">
+      <div class="flappy-wrap">
+        <div class="game-header">
+          <div>
+            <p class="overline">rose flight</p>
+            <h1>Flappy Bird</h1>
+          </div>
+          <div class="score-card" aria-live="polite">
+            <span>очки</span>
+            <strong id="flappyScoreValue">0</strong>
+          </div>
+        </div>
+        <div class="flappy-stage" id="flappyStage" role="application" aria-label="Flappy Bird">
+          <div class="flappy-rose" id="flappyRose"></div>
+          <div class="flappy-overlay hidden" id="flappyOverlay">
+            <div class="complete-ring"></div>
+            <p id="flappyOverlayText">Нажми, чтобы взлететь</p>
+          </div>
+        </div>
+        <div class="game-help">
+          <span>Пробел / клик</span>
+          <span>тап на телефоне</span>
+          <button class="mini-button" id="flappyMenuButton" type="button">Меню</button>
         </div>
       </div>
     </section>
@@ -62,7 +124,11 @@
           <div class="terminal-line" id="finalTerminalLine"></div>
         </div>
         <div class="final-message" id="finalMessage"></div>
-        <button class="ghost-button hidden" id="replayButton" type="button">🎮 Сыграть ещё раз</button>
+        <div class="final-actions hidden" id="finalActions">
+          <p>Мини-меню</p>
+          <button class="ghost-button" id="replayButton" type="button">🎮 Сыграть ещё раз</button>
+          <button class="ghost-button" id="finalMenuButton" type="button">Вернуться в меню</button>
+        </div>
       </div>
     </section>
   </main>
