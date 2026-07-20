@@ -1,0 +1,549 @@
+:root {
+  --bg: #030303;
+  --text: #f7f7f7;
+  --muted: rgba(247, 247, 247, 0.62);
+  --faint: rgba(247, 247, 247, 0.1);
+  --line: rgba(247, 247, 247, 0.16);
+  --glow: rgba(255, 255, 255, 0.18);
+  --card: rgba(255, 255, 255, 0.055);
+  --card-strong: rgba(255, 255, 255, 0.105);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-main: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.28;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px);
+  background-size: 42px 42px, 57px 57px;
+  mix-blend-mode: screen;
+}
+
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.72);
+  opacity: 0;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.48);
+  transform: translate3d(0, 0, 0);
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: clamp(22px, 5vw, 56px);
+  opacity: 0;
+  visibility: hidden;
+  filter: blur(18px);
+  transform: scale(1.015);
+  transition:
+    opacity 900ms var(--ease),
+    filter 900ms var(--ease),
+    transform 900ms var(--ease),
+    visibility 0ms linear 900ms;
+}
+
+.screen-active {
+  opacity: 1;
+  visibility: visible;
+  filter: blur(0);
+  transform: scale(1);
+  transition-delay: 0ms;
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(12px);
+}
+
+.ghost-button {
+  min-width: 150px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.055);
+  letter-spacing: 0;
+  cursor: pointer;
+  box-shadow:
+    0 0 32px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px);
+  transition:
+    opacity 550ms var(--ease),
+    visibility 550ms var(--ease),
+    transform 550ms var(--ease),
+    background 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.ghost-button:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.ghost-button:hover,
+.ghost-button:focus-visible {
+  border-color: rgba(255, 255, 255, 0.74);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 44px rgba(255, 255, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+  outline: none;
+}
+
+.terminal {
+  width: min(640px, 100%);
+  min-height: 252px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    rgba(0, 0, 0, 0.72);
+  box-shadow:
+    0 0 80px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px);
+  overflow: hidden;
+  animation: terminalIn 1300ms var(--ease) both;
+}
+
+.terminal-top {
+  display: flex;
+  gap: 8px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.terminal-top span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.18);
+}
+
+.terminal-lines {
+  padding: clamp(20px, 4vw, 32px);
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--font-mono);
+  font-size: clamp(14px, 2.2vw, 18px);
+  line-height: 1.9;
+}
+
+.terminal-line::before {
+  content: "> ";
+  color: rgba(255, 255, 255, 0.4);
+}
+
+#screen-terminal {
+  flex-direction: column;
+  gap: 34px;
+}
+
+.game-wrap {
+  width: min(680px, 100%);
+}
+
+.game-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.overline {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.game-header h1 {
+  margin: 0;
+  font-size: clamp(32px, 8vw, 64px);
+  line-height: 0.92;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-shadow: 0 0 36px rgba(255, 255, 255, 0.14);
+}
+
+.score-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 92px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.score-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.score-card strong {
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 520;
+}
+
+.game-board-shell {
+  position: relative;
+  width: min(82vmin, 560px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
+  box-shadow:
+    0 0 90px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  touch-action: none;
+}
+
+.game-board {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  gap: 2px;
+}
+
+.cell {
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.018);
+  transition: background 90ms linear, box-shadow 90ms linear, transform 90ms linear;
+}
+
+.cell-snake {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.28);
+}
+
+.cell-head {
+  background: #ffffff;
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.55);
+  transform: scale(1.03);
+}
+
+.cell-food {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.82), 0 0 22px rgba(255, 255, 255, 0.35);
+  animation: foodPulse 1250ms ease-in-out infinite;
+}
+
+.game-complete {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(14px);
+  transition:
+    opacity 700ms var(--ease),
+    visibility 700ms var(--ease),
+    transform 700ms var(--ease);
+}
+
+.game-complete:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.complete-ring {
+  width: 86px;
+  height: 86px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 50%;
+  box-shadow:
+    0 0 48px rgba(255, 255, 255, 0.2),
+    inset 0 0 28px rgba(255, 255, 255, 0.1);
+  animation: ringBloom 1200ms var(--ease) infinite alternate;
+}
+
+.game-complete p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 18px;
+}
+
+.game-help {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.game-help span {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+#screen-memory {
+  flex-direction: column;
+  gap: 40px;
+}
+
+.poem {
+  width: min(760px, 100%);
+  font-size: clamp(28px, 6vw, 64px);
+  line-height: 1.13;
+  font-weight: 520;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+.poem-line {
+  margin: 0.12em 0;
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(12px);
+  animation: lineReveal 950ms var(--ease) forwards;
+}
+
+.final-scene {
+  width: min(760px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(28px, 5vh, 48px);
+  text-align: left;
+}
+
+.final-terminal {
+  width: min(560px, 100%);
+  color: rgba(255, 255, 255, 0.76);
+  font-family: var(--font-mono);
+  font-size: clamp(14px, 2vw, 17px);
+  line-height: 1.8;
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.18);
+  transition:
+    opacity 900ms var(--ease),
+    filter 900ms var(--ease),
+    transform 900ms var(--ease);
+}
+
+.final-terminal-hidden {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(-10px);
+}
+
+.final-message {
+  width: 100%;
+  opacity: 1;
+  transition:
+    opacity 900ms var(--ease),
+    filter 900ms var(--ease),
+    transform 900ms var(--ease);
+}
+
+.final-message.hidden {
+  opacity: 0;
+  visibility: hidden;
+  filter: blur(14px);
+  transform: translateY(14px);
+}
+
+.final-message-line {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(25px, 5vw, 46px);
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-shadow: 0 0 32px rgba(255, 255, 255, 0.11);
+  white-space: pre-wrap;
+}
+
+.final-message-line + .final-message-line {
+  margin-top: 0.18em;
+}
+
+.final-message-line.final-gap {
+  height: 0.62em;
+}
+
+.typing-caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.92em;
+  margin-left: 4px;
+  border-right: 1px solid rgba(255, 255, 255, 0.78);
+  transform: translateY(0.12em);
+  animation: caret 850ms steps(1) infinite;
+}
+
+@keyframes terminalIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    filter: blur(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes foodPulse {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ringBloom {
+  from {
+    transform: scale(0.92);
+    opacity: 0.56;
+  }
+  to {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes lineReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    overflow: hidden;
+  }
+
+  .screen {
+    padding: 18px;
+  }
+
+  .terminal {
+    min-height: 236px;
+  }
+
+  .game-header {
+    align-items: center;
+  }
+
+  .score-card {
+    min-width: 76px;
+    padding: 10px 12px;
+  }
+
+  .score-card strong {
+    font-size: 28px;
+  }
+
+  .game-board-shell {
+    width: min(92vw, 520px);
+  }
+
+  .game-board {
+    padding: 6px;
+    gap: 1px;
+  }
+
+  .poem {
+    font-size: clamp(27px, 9vw, 48px);
+  }
+
+  .final-scene {
+    gap: 28px;
+  }
+
+  .final-message-line {
+    font-size: clamp(23px, 8vw, 38px);
+    line-height: 1.18;
+  }
+}

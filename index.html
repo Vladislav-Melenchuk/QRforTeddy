@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Место, которое ждет</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="particles" id="particles" aria-hidden="true"></div>
+
+  <main class="app" id="app">
+    <section class="screen screen-active" id="screen-terminal" aria-label="Подключение">
+      <div class="terminal" aria-live="polite">
+        <div class="terminal-top">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="terminal-lines" id="terminalLines"></div>
+      </div>
+      <button class="ghost-button hidden" id="startButton" type="button">Начать</button>
+    </section>
+
+    <section class="screen" id="screen-game" aria-label="Игра">
+      <div class="game-wrap">
+        <div class="game-header">
+          <div>
+            <p class="overline">Memory gate</p>
+            <h1>Набери 54</h1>
+          </div>
+          <div class="score-card" aria-live="polite">
+            <span>очки</span>
+            <strong id="scoreValue">0</strong>
+          </div>
+        </div>
+
+        <div class="game-board-shell">
+          <div class="game-board" id="gameBoard" role="application" aria-label="Змейка"></div>
+          <div class="game-complete hidden" id="gameComplete">
+            <div class="complete-ring"></div>
+            <p>Путь открыт</p>
+          </div>
+        </div>
+
+        <div class="game-help">
+          <span>WASD / стрелки</span>
+          <span>свайп на телефоне</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-memory" aria-label="Воспоминания">
+      <div class="poem" id="poemLines" aria-live="polite"></div>
+      <button class="ghost-button hidden" id="continueButton" type="button">Продолжить</button>
+    </section>
+
+    <section class="screen" id="screen-final" aria-label="Финал">
+      <div class="final-scene" aria-live="polite">
+        <div class="final-terminal" id="finalTerminal">
+          <div class="terminal-line" id="finalTerminalLine"></div>
+        </div>
+        <div class="final-message" id="finalMessage"></div>
+        <button class="ghost-button hidden" id="replayButton" type="button">🎮 Сыграть ещё раз</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
