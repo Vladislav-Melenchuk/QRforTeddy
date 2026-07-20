@@ -8,6 +8,7 @@
   --card: rgba(255, 255, 255, 0.055);
   --card-strong: rgba(255, 255, 255, 0.105);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --rose: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAUiSURBVEiJ3ZVJbJ1XGYafM/yDfe3rOY59DUmdlKR1iDO4SlPqqkihqlARrdQsGlVITIIFsGHFAiR2iAVb2IBUFYSQF5WySUuhhZRSK8FNmji1Y8e1E8djbOd6uvf+/5nYEDdUBMQS3t3RkZ5Hn/R+58D/esS/uzzZc7KuULWf64njF53JSwohtoR7o10mb5dNfnDeyZHz6xem/2vBC6Un+7s7Wl/pbCr0HME17l29E4e8BkEwVPE+byj4ZweP67Ebs+ULY9Ovjyrz9foNX3hn69Kd/yj43vHnf7hn/94fPFsp1125MsF4brEh0KU8yw5OFFLahWXdeZq05LZVlbNbZuszkcomcvv7V1b+9o37eer+w1PFIw+fGDj06/ar1+qv3lzgaJ3iSw0xRS15P4MJE8h8YDwPvFsNLFhYcUQ+hMLLTaqpSen9jrax8dri9XtMeb/gka6OHzU7W9+e13gi9bRIz09Xq0zljgORYk+kyQK0acmThYijqeJMUVMvYaSS8XS9Krbo6LsPnKC/88BParMLbcdUzqb3vFc1PJTEjGWORAhq3rPhA7PGIwLMWU+EYXccsWI9DyeaZU+qfMfrN/LFOwD6mc7DhYPde99ubGs+MHPtRnoyESxZyx0LH+aKbu2pl4KJ3FCUgaoXCKBBSba8o0Nr/lz19OrAvDF8pSntHsvcL9jiKQBpsvjUc4/1HX/85kzxmSjErRpsCCy4QI+WGDzbPqCEYCtIilJQVHAi1aR4mrRi0zliAfPGYILnYKx6BxuOdgBIF+SVyb9eWts2lu7mRlYcpFLSrmDbO96qeDqkZckGVp2gEuCbzQnvVjM6dWCkGngo8gAEYKxa5Uiq2rQUxwDk+fUL0x8src0kApp6upjIHSUdsUvBRoAmCbespENBUQa+05owldXYcI4WqZjIPRX/cdvXvedm7jIrxJ2dFm348GokcBd0QqsUCKEpKsXxxFPxgf7E80Tq6Y4ks8ZxPQeD4I+VQKeGtfsEZQ9vbtvtd9ZH3t9pUXexfdRadSYKrmVgcIDXRqdpUYo2BYnwDNcE40ZSC2CDoIKkEgQDacSRRDCZexoUjGSCWSt4uj6OCrrkr1bn/qIApraXzL667lPfjuyBV8dmeHxfD28ulAlCUScVzUrRLCVdWtEbC/pTweEYwHK5Zpm2gg0veL4xZd5YPpsKPZr5tQ8q80M7e1CKOieXnXjpdCEkF5fvUkOwagM1D4P1mkeTAD5nwTguZ4HrOUwauJzDY2mgP4FjdSl/qDj3Xi0M37LmpZnaYk3fE2waOTcXebcRIr5YkIznGWc3BQtW4jYzghB4FH2R5vN1kkXr+TBzpHg+pQO7tWYqc/4jE4bOrl08849SfbzJfaZg+pobvrpgTOuMkRxKEw4ngVUPpVizYh0+BJa8Y84aVHD0ak9fEujSEY+mKT8vZx9NW/Plmdpi7R53Z4Jz3Mj22JbVrzWpfZNZznDFsewCyw6+tauOcjUwk5udtggBu1TE3jiiWSl+dTdbum39j/9Uvlx+4FvUG+9eEkKf6k9kQWHp0oFPq8A5o3mu1EHJOFqUphRFPJKklKKIVQc/W6tNjWbh+79bu/hbPpF/ElyrLUwU4923J3NxaH8c1++KVJRKhbXe/rJsq32DA7rz0EGx1dHOJSey38zfnTm3kb12JcQvnFsdvvRJODzgRzvNaVVpnTrVKsUXMifijDC8ZbffaIkLZxrjeMATbi1WzVvFcu/5IYbcv2L8/+TvxgN5fjn6/ewAAAAASUVORK5CYII=");
   --font-main: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
@@ -196,6 +197,158 @@ button {
   gap: 34px;
 }
 
+.menu-scene {
+  position: relative;
+  width: min(860px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 5vw, 44px);
+  overflow: hidden;
+}
+
+.bubble-field {
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.bubble-field span {
+  position: absolute;
+  width: clamp(80px, 15vw, 170px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.025) 58%, transparent 70%);
+  box-shadow:
+    inset 0 0 34px rgba(255, 255, 255, 0.035),
+    0 0 60px rgba(255, 255, 255, 0.04);
+  animation: bubbleFloat 9000ms ease-in-out infinite alternate;
+}
+
+.bubble-field span:nth-child(1) {
+  left: 4%;
+  top: 10%;
+}
+
+.bubble-field span:nth-child(2) {
+  right: 8%;
+  top: 6%;
+  width: clamp(70px, 10vw, 120px);
+  animation-duration: 7600ms;
+}
+
+.bubble-field span:nth-child(3) {
+  left: 34%;
+  bottom: 2%;
+  width: clamp(110px, 18vw, 210px);
+  animation-duration: 10200ms;
+}
+
+.bubble-field span:nth-child(4) {
+  right: 20%;
+  bottom: 18%;
+  width: clamp(58px, 9vw, 112px);
+  animation-duration: 8400ms;
+}
+
+.bubble-field span:nth-child(5) {
+  left: 12%;
+  bottom: 24%;
+  width: clamp(54px, 8vw, 94px);
+  animation-duration: 6900ms;
+}
+
+.bubble-field span:nth-child(6) {
+  right: 2%;
+  bottom: 0;
+  width: clamp(96px, 14vw, 168px);
+  animation-duration: 11800ms;
+}
+
+.menu-heading h1 {
+  margin: 0;
+  font-size: clamp(44px, 9vw, 90px);
+  line-height: 0.94;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-shadow: 0 0 42px rgba(255, 255, 255, 0.12);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.menu-card {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: var(--text);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.035)),
+    rgba(255, 255, 255, 0.035);
+  box-shadow:
+    0 0 80px rgba(255, 255, 255, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  text-align: left;
+  cursor: pointer;
+  backdrop-filter: blur(22px);
+  transition:
+    transform 360ms var(--ease),
+    border-color 360ms var(--ease),
+    background 360ms var(--ease),
+    box-shadow 360ms var(--ease);
+}
+
+.menu-card:hover,
+.menu-card:focus-visible {
+  border-color: rgba(255, 255, 255, 0.48);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
+    rgba(255, 255, 255, 0.045);
+  box-shadow:
+    0 0 100px rgba(255, 255, 255, 0.095),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  outline: none;
+  transform: translateY(-4px);
+}
+
+.menu-icon {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 20px;
+  font-weight: 600;
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.08);
+}
+
+.menu-card strong {
+  display: block;
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.05;
+  font-weight: 620;
+}
+
+.menu-card small {
+  display: block;
+  max-width: 220px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .game-wrap {
   width: min(680px, 100%);
 }
@@ -291,8 +444,8 @@ button {
 }
 
 .cell-food {
-  background: transparent;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.82), 0 0 22px rgba(255, 255, 255, 0.35);
+  background: var(--rose) center / contain no-repeat;
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.35);
   animation: foodPulse 1250ms ease-in-out infinite;
 }
 
@@ -350,6 +503,124 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.035);
+}
+
+.mini-button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.035);
+  cursor: pointer;
+  transition:
+    color 220ms ease,
+    border-color 220ms ease,
+    background 220ms ease;
+}
+
+.mini-button:hover,
+.mini-button:focus-visible {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
+.flappy-wrap {
+  width: min(720px, 100%);
+}
+
+.flappy-stage {
+  position: relative;
+  width: min(86vmin, 620px);
+  height: min(70vh, 520px);
+  min-height: 420px;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.1), transparent 54%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+  box-shadow:
+    0 0 90px rgba(255, 255, 255, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.flappy-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.flappy-rose {
+  position: absolute;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  background: var(--rose) center / contain no-repeat;
+  filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.24));
+  transform: translate3d(80px, 180px, 0);
+}
+
+.pipe {
+  position: absolute;
+  z-index: 1;
+  width: 58px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+    rgba(255, 255, 255, 0.045);
+  box-shadow:
+    0 0 28px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.pipe-top {
+  top: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+.pipe-bottom {
+  bottom: 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.flappy-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(12px);
+  transition:
+    opacity 550ms var(--ease),
+    visibility 550ms var(--ease),
+    transform 550ms var(--ease);
+}
+
+.flappy-overlay:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.flappy-overlay p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 18px;
 }
 
 #screen-memory {
@@ -449,6 +720,47 @@ button {
   animation: caret 850ms steps(1) infinite;
 }
 
+.final-actions {
+  align-self: center;
+  width: min(380px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)),
+    rgba(255, 255, 255, 0.035);
+  box-shadow:
+    0 0 80px rgba(255, 255, 255, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  transition:
+    opacity 650ms var(--ease),
+    visibility 650ms var(--ease),
+    transform 650ms var(--ease);
+}
+
+.final-actions:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.final-actions p {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.final-actions .ghost-button {
+  width: 100%;
+}
+
 @keyframes terminalIn {
   from {
     opacity: 0;
@@ -459,6 +771,17 @@ button {
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0);
+  }
+}
+
+@keyframes bubbleFloat {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.34;
+  }
+  to {
+    transform: translate3d(16px, -24px, 0) scale(1.06);
+    opacity: 0.68;
   }
 }
 
@@ -532,6 +855,25 @@ button {
   .game-board {
     padding: 6px;
     gap: 1px;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-card {
+    min-height: 138px;
+    padding: 18px;
+  }
+
+  .flappy-stage {
+    width: min(92vw, 520px);
+    min-height: 390px;
+    height: min(62vh, 500px);
+  }
+
+  .pipe {
+    width: 48px;
   }
 
   .poem {
