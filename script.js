@@ -37,7 +37,7 @@
 
   const GAME = {
     size: 18,
-    targetScore: 54,
+    targetScore: 4,
     startLength: 4,
     startX: 8,
     startY: 9,
