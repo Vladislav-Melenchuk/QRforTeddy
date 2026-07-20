@@ -4,19 +4,34 @@
   const SELECTORS = {
     particles: "particles",
     terminal: "screen-terminal",
+    menu: "screen-menu",
     game: "screen-game",
+    flappy: "screen-flappy",
     memory: "screen-memory",
     final: "screen-final",
     terminalLines: "terminalLines",
     startButton: "startButton",
+    snakeFreeButton: "snakeFreeButton",
+    flappyButton: "flappyButton",
+    messageButton: "messageButton",
+    snakeTitle: "snakeTitle",
     gameBoard: "gameBoard",
     scoreValue: "scoreValue",
     gameComplete: "gameComplete",
+    snakeMenuButton: "snakeMenuButton",
+    flappyStage: "flappyStage",
+    flappyRose: "flappyRose",
+    flappyScoreValue: "flappyScoreValue",
+    flappyOverlay: "flappyOverlay",
+    flappyOverlayText: "flappyOverlayText",
+    flappyMenuButton: "flappyMenuButton",
     poemLines: "poemLines",
     continueButton: "continueButton",
     finalTerminal: "finalTerminal",
     finalTerminalLine: "finalTerminalLine",
     finalMessage: "finalMessage",
+    finalActions: "finalActions",
+    finalMenuButton: "finalMenuButton",
     replayButton: "replayButton"
   };
 
@@ -37,11 +52,23 @@
 
   const GAME = {
     size: 18,
-    targetScore: 4,
+    targetScore: 54,
     startLength: 4,
     startX: 8,
     startY: 9,
     initialDirection: { x: 1, y: 0 }
+  };
+
+  const FLAPPY = {
+    roseSize: 34,
+    startX: 80,
+    gravity: 0.00145,
+    lift: -0.46,
+    pipeWidth: 58,
+    pipeGap: 148,
+    pipeSpacing: 215,
+    pipeSpeed: 0.17,
+    spawnOffset: 120
   };
 
   const TEXT = {
@@ -81,15 +108,26 @@
     activeScreen: SELECTORS.terminal,
     animationFrame: 0,
     particles: [],
+    terminalRunId: 0,
+    finalRunId: 0,
     gameFrame: 0,
     gameRunning: false,
     lastGameTime: 0,
+    snakeMode: "challenge",
     snake: [],
     direction: { ...GAME.initialDirection },
     nextDirection: { ...GAME.initialDirection },
     food: { x: 0, y: 0 },
     score: 0,
-    touchStart: null
+    touchStart: null,
+    flappyFrame: 0,
+    flappyRunning: false,
+    flappyLastTime: 0,
+    flappyY: 0,
+    flappyVelocity: 0,
+    flappyScore: 0,
+    flappyPipes: [],
+    flappyStarted: false
   };
 
   const elements = {};
@@ -136,9 +174,21 @@
   }
 
   async function runTerminal() {
+    const runId = state.terminalRunId + 1;
+    state.terminalRunId = runId;
+    elements.terminalLines.innerHTML = "";
+    hideElement(elements.startButton);
+
     for (const line of TEXT.terminal) {
+      if (runId !== state.terminalRunId) {
+        return;
+      }
       await typeLine(elements.terminalLines, line, "terminal-line");
       await delay(TIMING.terminalLinePause);
+    }
+
+    if (runId !== state.terminalRunId) {
+      return;
     }
     showElement(elements.startButton);
   }
@@ -203,7 +253,8 @@
     }
   }
 
-  function resetGame() {
+  function resetGame(mode) {
+    state.snakeMode = mode || state.snakeMode;
     state.score = 0;
     state.direction = { ...GAME.initialDirection };
     state.nextDirection = { ...GAME.initialDirection };
@@ -214,13 +265,15 @@
     }
 
     elements.scoreValue.textContent = String(state.score);
+    elements.snakeTitle.textContent = state.snakeMode === "challenge" ? "Набери 54" : "Бесконечная змейка";
     hideElement(elements.gameComplete);
     placeFood();
     renderGame();
   }
 
-  function startGame() {
-    resetGame();
+  function startGame(mode) {
+    stopFlappy();
+    resetGame(mode);
     state.gameRunning = true;
     state.lastGameTime = performance.now();
     window.cancelAnimationFrame(state.gameFrame);
@@ -269,7 +322,7 @@
       state.score += 1;
       elements.scoreValue.textContent = String(state.score);
 
-      if (state.score === GAME.targetScore) {
+      if (state.snakeMode === "challenge" && state.score === GAME.targetScore) {
         completeGame();
         return;
       }
@@ -334,6 +387,16 @@
     runFinalMessage();
   }
 
+  function returnToMenu() {
+    stopGame();
+    stopFlappy();
+    state.terminalRunId += 1;
+    state.finalRunId += 1;
+    hideElement(elements.gameComplete);
+    hideElement(elements.flappyOverlay);
+    switchScreen(SELECTORS.menu);
+  }
+
   function setDirection(next) {
     const isOpposite = next.x + state.direction.x === 0 && next.y + state.direction.y === 0;
     if (!isOpposite) {
@@ -342,6 +405,12 @@
   }
 
   function handleKeydown(event) {
+    if (state.activeScreen === SELECTORS.flappy && (event.code === "Space" || event.code === "ArrowUp")) {
+      event.preventDefault();
+      flap();
+      return;
+    }
+
     const keyMap = {
       ArrowUp: { x: 0, y: -1 },
       KeyW: { x: 0, y: -1 },
@@ -416,19 +485,30 @@
   }
 
   async function runFinalMessage() {
+    const runId = state.finalRunId + 1;
+    state.finalRunId = runId;
     elements.finalTerminal.classList.remove("final-terminal-hidden");
     elements.finalTerminalLine.textContent = "";
     elements.finalMessage.innerHTML = "";
     hideElement(elements.finalMessage);
-    hideElement(elements.replayButton);
+    hideElement(elements.finalActions);
 
     await typeTextInto(elements.finalTerminalLine, TEXT.finalIntro, TIMING.terminalChar);
+    if (runId !== state.finalRunId) {
+      return;
+    }
     await delay(TIMING.finalIntroPause);
     elements.finalTerminal.classList.add("final-terminal-hidden");
     await delay(TIMING.finalFadePause);
+    if (runId !== state.finalRunId) {
+      return;
+    }
     showElement(elements.finalMessage);
 
     for (const line of TEXT.final) {
+      if (runId !== state.finalRunId) {
+        return;
+      }
       const node = document.createElement("p");
       node.className = line ? "final-message-line" : "final-message-line final-gap";
       elements.finalMessage.appendChild(node);
@@ -441,26 +521,206 @@
     }
 
     await delay(TIMING.finalReplayDelay);
-    showElement(elements.replayButton);
+    if (runId === state.finalRunId) {
+      showElement(elements.finalActions);
+    }
   }
 
   function restartExperience() {
-    stopGame();
-    elements.terminalLines.innerHTML = "";
-    hideElement(elements.startButton);
+    state.finalRunId += 1;
     elements.finalTerminalLine.textContent = "";
     elements.finalMessage.innerHTML = "";
     elements.finalTerminal.classList.remove("final-terminal-hidden");
     hideElement(elements.finalMessage);
-    hideElement(elements.replayButton);
-    switchScreen(SELECTORS.terminal);
-    runTerminal();
+    hideElement(elements.finalActions);
+    switchScreen(SELECTORS.game);
+    startGame("free");
+  }
+
+  function createPipe(x) {
+    const stageHeight = elements.flappyStage.clientHeight;
+    const minTop = 54;
+    const maxTop = Math.max(minTop, stageHeight - FLAPPY.pipeGap - 90);
+    const gapTop = minTop + Math.random() * (maxTop - minTop);
+    const top = document.createElement("div");
+    const bottom = document.createElement("div");
+
+    top.className = "pipe pipe-top";
+    bottom.className = "pipe pipe-bottom";
+    elements.flappyStage.append(top, bottom);
+
+    return {
+      x,
+      gapTop,
+      passed: false,
+      top,
+      bottom
+    };
+  }
+
+  function resetFlappy() {
+    state.flappyPipes.forEach((pipe) => {
+      pipe.top.remove();
+      pipe.bottom.remove();
+    });
+    state.flappyPipes = [];
+    state.flappyScore = 0;
+    state.flappyStarted = false;
+    state.flappyY = elements.flappyStage.clientHeight * 0.42;
+    state.flappyVelocity = 0;
+    elements.flappyScoreValue.textContent = "0";
+    elements.flappyOverlayText.textContent = "Нажми, чтобы взлететь";
+    showElement(elements.flappyOverlay);
+    positionFlappyRose();
+  }
+
+  function startFlappy() {
+    stopGame();
+    resetFlappy();
+    state.flappyRunning = true;
+    state.flappyLastTime = performance.now();
+    window.cancelAnimationFrame(state.flappyFrame);
+    state.flappyFrame = window.requestAnimationFrame(flappyLoop);
+  }
+
+  function stopFlappy() {
+    state.flappyRunning = false;
+    window.cancelAnimationFrame(state.flappyFrame);
+  }
+
+  function flap() {
+    if (state.activeScreen !== SELECTORS.flappy) {
+      return;
+    }
+
+    if (!state.flappyRunning) {
+      startFlappy();
+    }
+
+    state.flappyStarted = true;
+    hideElement(elements.flappyOverlay);
+    state.flappyVelocity = FLAPPY.lift;
+  }
+
+  function flappyLoop(timestamp) {
+    if (!state.flappyRunning) {
+      return;
+    }
+
+    const delta = Math.min(34, timestamp - state.flappyLastTime);
+    state.flappyLastTime = timestamp;
+
+    if (state.flappyStarted) {
+      updateFlappy(delta);
+    }
+
+    renderFlappy();
+    state.flappyFrame = window.requestAnimationFrame(flappyLoop);
+  }
+
+  function updateFlappy(delta) {
+    const stageWidth = elements.flappyStage.clientWidth;
+    const stageHeight = elements.flappyStage.clientHeight;
+
+    state.flappyVelocity += FLAPPY.gravity * delta;
+    state.flappyY += state.flappyVelocity * delta;
+
+    if (!state.flappyPipes.length) {
+      state.flappyPipes.push(createPipe(stageWidth + FLAPPY.spawnOffset));
+      state.flappyPipes.push(createPipe(stageWidth + FLAPPY.spawnOffset + FLAPPY.pipeSpacing));
+    }
+
+    state.flappyPipes.forEach((pipe) => {
+      pipe.x -= FLAPPY.pipeSpeed * delta;
+
+      if (!pipe.passed && pipe.x + FLAPPY.pipeWidth < FLAPPY.startX) {
+        pipe.passed = true;
+        state.flappyScore += 1;
+        elements.flappyScoreValue.textContent = String(state.flappyScore);
+      }
+    });
+
+    const firstPipe = state.flappyPipes[0];
+    if (firstPipe && firstPipe.x < -FLAPPY.pipeWidth) {
+      firstPipe.top.remove();
+      firstPipe.bottom.remove();
+      state.flappyPipes.shift();
+      const lastX = state.flappyPipes[state.flappyPipes.length - 1].x;
+      state.flappyPipes.push(createPipe(lastX + FLAPPY.pipeSpacing));
+    }
+
+    if (state.flappyY < 0 || state.flappyY + FLAPPY.roseSize > stageHeight || flappyHitsPipe()) {
+      endFlappyRound();
+    }
+  }
+
+  function flappyHitsPipe() {
+    const roseLeft = FLAPPY.startX;
+    const roseRight = FLAPPY.startX + FLAPPY.roseSize;
+    const roseTop = state.flappyY;
+    const roseBottom = state.flappyY + FLAPPY.roseSize;
+
+    return state.flappyPipes.some((pipe) => {
+      const pipeLeft = pipe.x;
+      const pipeRight = pipe.x + FLAPPY.pipeWidth;
+      const overlapsX = roseRight > pipeLeft && roseLeft < pipeRight;
+      const outsideGap = roseTop < pipe.gapTop || roseBottom > pipe.gapTop + FLAPPY.pipeGap;
+      return overlapsX && outsideGap;
+    });
+  }
+
+  function endFlappyRound() {
+    state.flappyStarted = false;
+    state.flappyRunning = false;
+    elements.flappyOverlayText.textContent = "Еще раз?";
+    showElement(elements.flappyOverlay);
+    window.cancelAnimationFrame(state.flappyFrame);
+  }
+
+  function positionFlappyRose() {
+    elements.flappyRose.style.transform = `translate3d(${FLAPPY.startX}px, ${state.flappyY}px, 0)`;
+  }
+
+  function renderFlappy() {
+    const stageHeight = elements.flappyStage.clientHeight;
+    positionFlappyRose();
+
+    state.flappyPipes.forEach((pipe) => {
+      pipe.top.style.height = `${pipe.gapTop}px`;
+      pipe.top.style.transform = `translate3d(${pipe.x}px, 0, 0)`;
+      pipe.bottom.style.height = `${stageHeight - pipe.gapTop - FLAPPY.pipeGap}px`;
+      pipe.bottom.style.transform = `translate3d(${pipe.x}px, 0, 0)`;
+    });
   }
 
   function bindEvents() {
     elements.startButton.addEventListener("click", () => {
+      switchScreen(SELECTORS.menu);
+    });
+
+    elements.snakeFreeButton.addEventListener("click", () => {
       switchScreen(SELECTORS.game);
-      startGame();
+      startGame("free");
+    });
+
+    elements.messageButton.addEventListener("click", () => {
+      switchScreen(SELECTORS.game);
+      startGame("challenge");
+    });
+
+    elements.flappyButton.addEventListener("click", () => {
+      switchScreen(SELECTORS.flappy);
+      startFlappy();
+    });
+
+    elements.snakeMenuButton.addEventListener("click", returnToMenu);
+    elements.flappyMenuButton.addEventListener("click", returnToMenu);
+
+    elements.flappyStage.addEventListener("pointerdown", flap);
+    elements.flappyOverlay.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+      startFlappy();
+      flap();
     });
 
     elements.continueButton.addEventListener("click", () => {
@@ -469,6 +729,7 @@
     });
 
     elements.replayButton.addEventListener("click", restartExperience);
+    elements.finalMenuButton.addEventListener("click", returnToMenu);
 
     window.addEventListener("keydown", handleKeydown);
     elements.gameBoard.addEventListener("touchstart", handleTouchStart, { passive: true });
